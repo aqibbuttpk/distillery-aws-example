@@ -1,33 +1,12 @@
 version: 0.2
-
-env:
-  variables:
-    MIX_ENV: "prod"
-
 phases:
   install:
     commands:
-      - chmod +x bin/build
-      - bin/build install
-  pre_build:
-    commands:
-      - bin/build pre_build
+      - pip install cfn-lint
   build:
     commands:
-      - bin/build build
-  post_build:
-    commands:
-      - bin/build post_build
-
+      - cfn-lint --template ./ec2pipe.yml --regions $AWS_REGION
+      - aws cloudformation validate-template --template-body file://$(pwd)/ec2pipe.yml
 artifacts:
   files:
-    - distillery_example.tar.gz
-    - appspec.yml
-    - templates/infra.yml
-    - templates/production.conf
-    - bin/unpack
-    - bin/stop
-    - bin/migrate
-    - bin/start
-    - bin/healthz
-  discard-paths: no
+    - '*'
